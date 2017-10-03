@@ -6,7 +6,10 @@
 package edu.wctc.distjava.bookwebapp.controller;
 
 import edu.wctc.distjava.bookwebapp.model.Author;
+import edu.wctc.distjava.bookwebapp.model.AuthorDao;
 import edu.wctc.distjava.bookwebapp.model.AuthorService;
+import edu.wctc.distjava.bookwebapp.model.IAuthorDao;
+import edu.wctc.distjava.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -44,10 +47,20 @@ public class AuthorController extends HttpServlet {
 
         try {
             String action = request.getParameter(ACTION);
-            AuthorService authorService = new AuthorService();
+            IAuthorDao dao = new AuthorDao(
+                    "com.mysql.jdbc.Driver",
+                    "jdbc:mysql://localhost:3306/book",
+                    "root",
+                    "admin",
+                    new MySqlDataAccess("com.mysql.jdbc.Driver",
+                         "jdbc:mysql://localhost:3306/book",
+                         "root",
+                         "admin"));
+
+            AuthorService authorService = new AuthorService(dao);
             List<Author> authorList = null;
-            
-            if(action.equalsIgnoreCase(LIST_ACTION)){
+
+            if (action.equalsIgnoreCase(LIST_ACTION)) {
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
             }

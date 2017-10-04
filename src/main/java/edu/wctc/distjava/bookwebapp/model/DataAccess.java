@@ -22,6 +22,8 @@ public interface DataAccess {
      * @throws java.lang.ClassNotFoundException
      */
     List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) throws SQLException, ClassNotFoundException;
+    
+    int deleteRecordById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException;
 
     String getDriverClass();
 
@@ -40,7 +42,5 @@ public interface DataAccess {
     void setUrl(String url);
 
     void setUserName(String userName);
-
-    int deleteRecordByPrimaryKey(String tableName, int primaryKey) throws SQLException, ClassNotFoundException;
     
 }

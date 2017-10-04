@@ -16,6 +16,7 @@ import java.util.Vector;
  * @author Mike
  */
 public class Ms_SqlServerDataAccess implements DataAccess {
+
     private final int ALL_RECORDS = 0;
 
     private Connection conn;
@@ -71,19 +72,38 @@ public class Ms_SqlServerDataAccess implements DataAccess {
 
         ResultSetMetaData rsmd = rs.getMetaData();
         int colCount = rsmd.getColumnCount();
-        Map<String,Object> record = null;
-        
+        Map<String, Object> record = null;
+
         while (rs.next()) {
             record = new LinkedHashMap();
-            for(int colNum = 1; colNum <= colCount; colNum++){
+            for (int colNum = 1; colNum <= colCount; colNum++) {
                 record.put(rsmd.getColumnName(colNum), rs.getObject(colNum));
             }
             rawData.add(record);
         }
-        
+
         closeConnection();
 
         return rawData;
+    }
+
+    @Override
+    public int deleteRecordById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException {
+        String sql = "DELETE FROM " + tableName + " WHERE " + pkColName + " = ";
+
+        if (pkValue instanceof String) {
+            sql += "'" + pkValue.toString() + "'";
+        } else {
+            sql += Long.parseLong(pkValue.toString());
+        }
+
+        openConnection();
+        stmt = conn.createStatement();
+        int recsDeleted = stmt.executeUpdate(sql);
+
+        closeConnection();
+
+        return recsDeleted;
     }
 
     @Override
@@ -125,7 +145,7 @@ public class Ms_SqlServerDataAccess implements DataAccess {
     public final void setPassword(String password) {
         this.password = password;
     }
-    
+
     //Testing the getAll method against a DBs
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DataAccess db = new Ms_SqlServerDataAccess(
@@ -134,18 +154,13 @@ public class Ms_SqlServerDataAccess implements DataAccess {
                 "app",
                 "app"
         );
-        
+
         List<Map<String, Object>> list = db.getAllRecords("CUSTOMER", 0);
-        
-        for(Map<String,Object> rec : list){
+
+        for (Map<String, Object> rec : list) {
             System.out.println(rec);
         }
-        
-    }
 
-    @Override
-    public int deleteRecordByPrimaryKey(String tableName, int primaryKey) throws SQLException, ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

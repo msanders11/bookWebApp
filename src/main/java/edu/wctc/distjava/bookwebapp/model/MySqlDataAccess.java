@@ -2,6 +2,7 @@ package edu.wctc.distjava.bookwebapp.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ public class MySqlDataAccess implements DataAccess {
 
     private Connection conn;
     private Statement stmt;
+    private PreparedStatement pstmt;
     private ResultSet rs;
     private String driverClass;
     private String url;
@@ -85,23 +87,22 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     @Override
-    public int deleteRecordByPrimaryKey(String tableName, int primaryKey) throws ClassNotFoundException, SQLException {
-        String sql = "";
-        int queryResult = 0;
-        if (primaryKey > 0) {
-            sql = "delete from " + tableName + " where author_id = " + primaryKey;
-            queryResult = 1;
-        }
+    public final int deleteRecordById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException {
         
-        openConnection();
-        stmt = conn.createStatement();
-        rs = stmt.executeQuery(sql);
+        String sql = "DELETE FROM " + tableName + " WHERE " + pkColName + " = ?";
+        
+        openConnection();   
+        
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setObject(1, pkValue);
+        int recsDeleted = pstmt.executeUpdate();
 
         closeConnection();
         
-        return queryResult;
+        return recsDeleted;        
     }
-
+    
+    
     public final String getDriverClass() {
         return driverClass;
     }
@@ -142,7 +143,11 @@ public class MySqlDataAccess implements DataAccess {
                 "root",
                 "admin"
         );
+        
+        //Test for Deleting records by PK
+        int recsDeleted = db.deleteRecordById("author", "author_id", 3);
 
+        //Test for Retrieving all records
         List<Map<String, Object>> list = db.getAllRecords("author", 0);
 
         for (Map<String, Object> rec : list) {
@@ -151,9 +156,6 @@ public class MySqlDataAccess implements DataAccess {
         
         
 
-        
-        
-        
     }
 
 }

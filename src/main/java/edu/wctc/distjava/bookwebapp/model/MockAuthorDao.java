@@ -29,8 +29,8 @@ public class MockAuthorDao implements IAuthorDao {
     }
 
     @Override
-    public final int DeleteAuthor(String tableName, int primaryKey) {
-        return 0;
+    public int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
+        return 1;
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {

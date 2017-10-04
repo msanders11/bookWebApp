@@ -21,6 +21,9 @@ public class AuthorDao implements IAuthorDao {
     private String password;
     private DataAccess db;
 
+    private final String AUTHOR_TABLE = "author";
+    private final String AUTHOR_PK = "author_id";
+
     public AuthorDao(String driverClass, String url, String userName, String password, DataAccess db) {
         setDriverClass(driverClass);
         setUrl(url);
@@ -58,6 +61,15 @@ public class AuthorDao implements IAuthorDao {
         }
 
         return list;
+    }
+
+    //Delete Author by Primary Key id
+    public final int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
+        if (id == null || id < 1) {
+            throw new IllegalArgumentException("id must be integer greater than zero");
+        }
+
+        return db.deleteRecordById(AUTHOR_TABLE, AUTHOR_PK, id);
     }
 
     public final DataAccess getDb() {
@@ -101,7 +113,7 @@ public class AuthorDao implements IAuthorDao {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        AuthorDao dao = new AuthorDao(
+        IAuthorDao dao = new AuthorDao(
                 "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root",
@@ -112,25 +124,17 @@ public class AuthorDao implements IAuthorDao {
                         "admin")
         );
 
+        //Testing Delete record by PK
+        int recsDeleted = dao.removeAuthorById(1);
+
+        //Testing Retrieve all records from database
         List<Author> list = dao.getListOfAuthors();
 
         for (Author a : list) {
             System.out.println(a.getAuthorId() + ", "
                     + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
         }
-    }
 
-    @Override
-    public int DeleteAuthor(String tableName, int primaryKey) {
-        int result = 0;
-        try {
-            result = db.deleteRecordByPrimaryKey(tableName, primaryKey);
-        } catch (SQLException ex) {
-            Logger.getLogger(AuthorDao.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AuthorDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
     }
 
 }

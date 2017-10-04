@@ -21,9 +21,15 @@ public class AuthorService {
         return authorDao.getListOfAuthors();
 
     }
-    
-    public int deleteAuthor(String tableName, int primaryKey){
-        return authorDao.DeleteAuthor(tableName, primaryKey);
+
+    public int removeAuthorById(String id) throws ClassNotFoundException, SQLException, NumberFormatException{
+        if (id == null) {
+            throw new IllegalArgumentException("id must be integer greater than zero");
+        }
+        
+        Integer value = Integer.parseInt(id);
+        
+        return authorDao.removeAuthorById(value);
     }
 
     public final IAuthorDao getAuthorDao() {
@@ -46,7 +52,11 @@ public class AuthorService {
                         "admin"));
 
         AuthorService authorService = new AuthorService(dao);
+        
+        //Test for Delet Author by id
+        int recsDeleted = authorService.removeAuthorById("2");
 
+        //Test retrieve all records
         List<Author> list = authorService.getAuthorList();
 
         for (Author a : list) {

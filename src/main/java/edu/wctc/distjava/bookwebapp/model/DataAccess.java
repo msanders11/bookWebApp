@@ -3,6 +3,7 @@ package edu.wctc.distjava.bookwebapp.model;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -21,26 +22,15 @@ public interface DataAccess {
      * @throws SQLException
      * @throws java.lang.ClassNotFoundException
      */
-    List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) throws SQLException, ClassNotFoundException;
+    List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) 
+            throws SQLException, ClassNotFoundException;
     
-    int deleteRecordById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException;
+    int deleteRecordById(String tableName, String pkColName, Object pkValue) 
+            throws ClassNotFoundException, SQLException;
 
-    String getDriverClass();
+    public abstract void openConnection(String driverClass, String url, 
+            String userName, String password) throws ClassNotFoundException, SQLException;
 
-    String getPassword();
-
-    String getUrl();
-
-    String getUserName();
-
-    void openConnection() throws ClassNotFoundException, SQLException;
-
-    void setDriverClass(String driverClass);
-
-    void setPassword(String password);
-
-    void setUrl(String url);
-
-    void setUserName(String userName);
+    public abstract int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws SQLException;
     
 }

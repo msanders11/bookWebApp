@@ -52,10 +52,7 @@ public class AuthorController extends HttpServlet {
                     "jdbc:mysql://localhost:3306/book",
                     "root",
                     "admin",
-                    new MySqlDataAccess("com.mysql.jdbc.Driver",
-                         "jdbc:mysql://localhost:3306/book",
-                         "root",
-                         "admin"));
+                    new MySqlDataAccess());
 
             AuthorService authorService = new AuthorService(dao);
             List<Author> authorList = null;

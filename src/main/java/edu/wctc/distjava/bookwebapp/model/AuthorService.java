@@ -12,6 +12,8 @@ import java.util.List;
 public class AuthorService {
 
     private IAuthorDao authorDao;
+    private final String AUTHOR_TABLE = "author";
+    private final String AUTHOR_PK = "author_id";
 
     public AuthorService(IAuthorDao authorDao) {
         setAuthorDao(authorDao);
@@ -46,10 +48,8 @@ public class AuthorService {
                 "jdbc:mysql://localhost:3306/book",
                 "root",
                 "admin",
-                new MySqlDataAccess("com.mysql.jdbc.Driver",
-                        "jdbc:mysql://localhost:3306/book",
-                        "root",
-                        "admin"));
+                new MySqlDataAccess()
+        );
 
         AuthorService authorService = new AuthorService(dao);
         

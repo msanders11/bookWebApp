@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  * @author Mike
  */
 public class AuthorDao implements IAuthorDao {
-
     private String driverClass;
     private String url;
     private String userName;
@@ -31,9 +30,22 @@ public class AuthorDao implements IAuthorDao {
         setPassword(password);
         setDb(db);
     }
+    
+    public final int addAuthor(Author author){
+        
+        return 0;
+    }
+    
+    public final int addAuthor(List<String> colName, List<Object> colValues){
+        
+        return 0;
+    }
 
     @Override
     public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException {
+        
+        db.openConnection(driverClass, url, userName, password);
+        
         List<Author> list = new Vector();
         List<Map<String, Object>> rawData = db.getAllRecords("author", 0);
 
@@ -45,31 +57,37 @@ public class AuthorDao implements IAuthorDao {
             Object objRecId = rec.get("author_id");
             Integer recId = objRecId == null ? 0 : Integer.parseInt(objRecId.toString());
             author.setAuthorId(recId);
-//            author.setAuthorId(Integer.parseInt(rec.get("author_id").toString()));
 
             Object objName = rec.get("author_name");
             String authorName = objName == null ? "" : objName.toString();
             author.setAuthorName(authorName);
-//            author.setAuthorName(rec.get("author_name").toString());
 
             Object objRecAdded = rec.get("date_added");
             Date recAdded = objRecAdded == null ? null : (Date) objRecAdded;
             author.setDateAdded(recAdded);
-//            author.setDateAdded((Date)rec.get("date_added"));
 
             list.add(author);
         }
+        
+        db.closeConnection();
 
         return list;
     }
 
     //Delete Author by Primary Key id
+    @Override
     public final int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
         if (id == null || id < 1) {
             throw new IllegalArgumentException("id must be integer greater than zero");
         }
+        
+        db.openConnection(driverClass, url, userName, password);
 
-        return db.deleteRecordById(AUTHOR_TABLE, AUTHOR_PK, id);
+        int recsDeleted = db.deleteRecordById(AUTHOR_TABLE, AUTHOR_PK, id);
+        
+        db.closeConnection();
+        
+        return recsDeleted;
     }
 
     public final DataAccess getDb() {
@@ -118,10 +136,7 @@ public class AuthorDao implements IAuthorDao {
                 "jdbc:mysql://localhost:3306/book",
                 "root",
                 "admin",
-                new MySqlDataAccess("com.mysql.jdbc.Driver",
-                        "jdbc:mysql://localhost:3306/book",
-                        "root",
-                        "admin")
+                new MySqlDataAccess()
         );
 
         //Testing Delete record by PK

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  * @author Mike
  */
 public class AuthorDao implements IAuthorDao {
+
     private String driverClass;
     private String url;
     private String userName;
@@ -31,21 +33,63 @@ public class AuthorDao implements IAuthorDao {
         setDb(db);
     }
     
-    public final int addAuthor(Author author){
+    public final int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException{
+        if(colNames == null || colValues == null || pkValue == null || pkColName == null){
+            throw new IllegalArgumentException();      
+            }
+        db.openConnection(driverClass, url, userName, password);
         
-        return 0;
+        int recsEdited = db.updateRecordById(AUTHOR_TABLE, colNames, colValues, pkValue, pkColName);
+        
+        db.closeConnection();
+        
+        return recsEdited;
     }
-    
-    public final int addAuthor(List<String> colName, List<Object> colValues){
-        
+
+    public final int addAuthor(Author author) throws ClassNotFoundException, SQLException {
+        if (author == null) {
+            throw new IllegalArgumentException("invalid author");
+        }
+
         return 0;
     }
 
     @Override
-    public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException {
-        
+    public final int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException {
+        if (colName == null && colValues == null) {
+            throw new IllegalArgumentException("invalid author");
+        }
+
         db.openConnection(driverClass, url, userName, password);
+
+        int recsAdded = db.createRecord(AUTHOR_TABLE, colName, colValues);
         
+        db.closeConnection();
+        
+        return recsAdded;
+    }
+
+    //Delete Author by Primary Key id
+    @Override
+    public final int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
+        if (id == null || id < 1) {
+            throw new IllegalArgumentException("id must be integer greater than zero");
+        }
+
+        db.openConnection(driverClass, url, userName, password);
+
+        int recsDeleted = db.deleteRecordById(AUTHOR_TABLE, AUTHOR_PK, id);
+
+        db.closeConnection();
+
+        return recsDeleted;
+    }
+
+    @Override
+    public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException {
+
+        db.openConnection(driverClass, url, userName, password);
+
         List<Author> list = new Vector();
         List<Map<String, Object>> rawData = db.getAllRecords("author", 0);
 
@@ -68,26 +112,10 @@ public class AuthorDao implements IAuthorDao {
 
             list.add(author);
         }
-        
+
         db.closeConnection();
 
         return list;
-    }
-
-    //Delete Author by Primary Key id
-    @Override
-    public final int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
-        if (id == null || id < 1) {
-            throw new IllegalArgumentException("id must be integer greater than zero");
-        }
-        
-        db.openConnection(driverClass, url, userName, password);
-
-        int recsDeleted = db.deleteRecordById(AUTHOR_TABLE, AUTHOR_PK, id);
-        
-        db.closeConnection();
-        
-        return recsDeleted;
     }
 
     public final DataAccess getDb() {

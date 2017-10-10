@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -22,6 +23,20 @@ public class AuthorService {
     public List<Author> getAuthorList() throws SQLException, ClassNotFoundException {
         return authorDao.getListOfAuthors();
 
+    }
+    
+    public final int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException{
+        if(colNames == null || colValues == null || pkValue == null || pkColName == null){
+            throw new IllegalArgumentException();      
+            }
+        return authorDao.editAuthor(colNames, colValues, pkValue, pkColName);
+    }
+    
+    public final int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException{
+        if(colName == null || colValues == null){
+            throw new IllegalArgumentException("Please provide values");
+        }
+        return authorDao.addAuthor(colName, colValues);
     }
 
     public int removeAuthorById(String id) throws ClassNotFoundException, SQLException, NumberFormatException{

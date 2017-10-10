@@ -33,4 +33,6 @@ public interface DataAccess {
 
     public abstract int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws SQLException;
     
+    public int updateRecordById(String tableName, List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws SQLException;
+    
 }

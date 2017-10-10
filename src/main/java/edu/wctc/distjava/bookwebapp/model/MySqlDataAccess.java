@@ -40,6 +40,31 @@ public class MySqlDataAccess implements DataAccess {
             conn.close();
         }
     }
+    
+    public final int updateRecordById(String tableName, List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws SQLException{
+        String sql = "UPDATE " + tableName + " ";
+        StringJoiner sj = new StringJoiner(" = ", "(", ")");
+        
+        for (String col : colNames) {
+            sj = new StringJoiner(" = ", "(", ")");            
+            sj.add(col);
+            
+            for (Object val: colValues){
+                sj = new StringJoiner(",", "(", ")");
+                sj.add("?");
+            }
+        }
+        sql += sj.toString();
+        sql += "Where " + pkColName + " = " + pkValue;
+        
+        pstmt = conn.prepareStatement(sql);
+        
+        for(int i=1; i <= colValues.size(); i++){
+            pstmt.setObject(i, colValues.get(i-1));
+        }
+        
+        return pstmt.executeUpdate();
+    }
 
     @Override
     public int createRecord(String tableName, List<String> colNames, List<Object> colValues)  throws SQLException{

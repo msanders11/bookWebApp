@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -52,6 +53,16 @@ public class MockAuthorDao implements IAuthorDao {
             System.out.println(a.getAuthorId() + ", "
                     + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
         }
+    }
+
+    @Override
+    public int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException {
+        return 1;
+    }
+
+    @Override
+    public int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException {
+        return 1;
     }
 
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wctc.distjava.bookwebapp.controller;
 
 import edu.wctc.distjava.bookwebapp.model.Author;
@@ -12,6 +7,10 @@ import edu.wctc.distjava.bookwebapp.model.IAuthorDao;
 import edu.wctc.distjava.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,7 +27,19 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthorController extends HttpServlet {
 
     public static final String ACTION = "action";
+    public static final String ID = "id";
+    public static final String COL_NAME = "colName";
+    public static final String AUTHOR_NAME = "value";
     public static final String LIST_ACTION = "list";
+    public static final String DELETE_ACTION = "delete";
+    public static final String UPDATE_ACTION = "update";
+    public static final String CREATE_ACTION = "create";
+    public static final String UPDATE_AUTHOR_ACTION = "updateAuthor";
+    public static final String DATE_ADDED_COL_NAME = "date_added";
+    public static final String AUTHOR_NAME_COL_NAME = "author_name";
+
+    public static final String UPDATE_AUTHOR_DESTINATION = "/updateAuthor.jsp";
+    public static final String LIST_AUTHOR_DESTINATION = "/authorList.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,6 +58,7 @@ public class AuthorController extends HttpServlet {
 
         try {
             String action = request.getParameter(ACTION);
+
             IAuthorDao dao = new AuthorDao(
                     "com.mysql.jdbc.Driver",
                     "jdbc:mysql://localhost:3306/book",
@@ -55,15 +67,66 @@ public class AuthorController extends HttpServlet {
                     new MySqlDataAccess());
 
             AuthorService authorService = new AuthorService(dao);
+
             List<Author> authorList = null;
+            List<Author> updateAuthor = null;
 
             if (action.equalsIgnoreCase(LIST_ACTION)) {
+                destination = LIST_AUTHOR_DESTINATION;
+                authorList = authorService.getAuthorList();
+                request.setAttribute("authorList", authorList);
+                // add more if logic for other CRUD methods Add/Update/Delete
+            } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
+                String id = request.getParameter(ID);
+
+                authorService.removeAuthorById(id);
+
+                authorList = authorService.getAuthorList();
+                request.setAttribute("authorList", authorList);
+
+            } else if (action.equalsIgnoreCase(UPDATE_ACTION)) {
+
+                String id = request.getParameter(ID);
+
+                updateAuthor = authorService.findAuthorById(id);
+                
+                Author author = new Author();
+                author = updateAuthor.get(0);
+                System.out.println(author);
+                request.setAttribute("updateAuthor", author);
+
+                destination = UPDATE_AUTHOR_DESTINATION;
+
+            } else if (action.equalsIgnoreCase(UPDATE_AUTHOR_ACTION)) {
+                String id = request.getParameter(ID);
+                String authorName = request.getParameter(AUTHOR_NAME);
+                String date = request.getParameter(DATE_ADDED_COL_NAME);
+
+                List<Object> colValues = Arrays.asList(authorName, date);
+                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
+
+                authorService.editAuthorById(colNames, colValues, id);
+
+                authorList = authorService.getAuthorList();
+                request.setAttribute("authorList", authorList);
+                
+            } else if (action.equalsIgnoreCase(CREATE_ACTION)) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                dateFormat.format(date);
+
+                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
+                Object obj = request.getParameter(AUTHOR_NAME);
+                List<Object> colValues = Arrays.asList(obj, date);
+
+                authorService.addAuthor(colNames, colValues);
+
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
             }
 
         } catch (Exception e) {
-            destination = "/authorList.jsp";
+//            destination = "/authorList.jsp";
             request.setAttribute("errorMessage", e.getMessage());
         }
 

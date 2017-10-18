@@ -1,6 +1,7 @@
 package edu.wctc.distjava.bookwebapp.model;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,40 +33,39 @@ public class AuthorDao implements IAuthorDao {
         setPassword(password);
         setDb(db);
     }
-    
-    public final int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException{
-        if(colNames == null || colValues == null || pkValue == null || pkColName == null){
-            throw new IllegalArgumentException();      
-            }
+
+    public final int editAuthorById(List<String> colNames, List<Object> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException {
+        if (colNames == null || colValues == null || pkValue == null || pkColName == null) {
+            throw new IllegalArgumentException();
+        }
         db.openConnection(driverClass, url, userName, password);
-        
-        int recsEdited = db.updateRecordById(AUTHOR_TABLE, colNames, colValues, pkValue, pkColName);
-        
+
+        int recsEdited = db.updateRecordById(AUTHOR_TABLE, colNames, colValues, pkValue, AUTHOR_PK);
+
         db.closeConnection();
-        
+
         return recsEdited;
     }
 
-    public final int addAuthor(Author author) throws ClassNotFoundException, SQLException {
-        if (author == null) {
-            throw new IllegalArgumentException("invalid author");
-        }
-
-        return 0;
-    }
-
+//    public final int addAuthor(Author author) throws ClassNotFoundException, SQLException {
+//        if (author == null) {
+//            throw new IllegalArgumentException("invalid author");
+//        }
+//
+//        return 0;
+//    }
     @Override
-    public final int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException {
-        if (colName == null && colValues == null) {
+    public final int addAuthor(List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException {
+        if (colNames == null && colValues == null) {
             throw new IllegalArgumentException("invalid author");
         }
 
         db.openConnection(driverClass, url, userName, password);
 
-        int recsAdded = db.createRecord(AUTHOR_TABLE, colName, colValues);
-        
+        int recsAdded = db.createRecord(AUTHOR_TABLE, colNames, colValues);
+
         db.closeConnection();
-        
+
         return recsAdded;
     }
 
@@ -83,6 +83,37 @@ public class AuthorDao implements IAuthorDao {
         db.closeConnection();
 
         return recsDeleted;
+    }
+
+    public final List<Author> getAuthorById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException {
+
+        db.openConnection(driverClass, url, userName, password);
+
+        List<Author> list = new Vector();
+        List<Map<String, Object>> rawData = db.getRecordById(tableName, pkColName, pkValue);
+
+        Author author = null;
+
+        for (Map<String, Object> rec : rawData) {
+            author = new Author();
+
+            Object objRecId = rec.get("author_id");
+            Integer recId = objRecId == null ? 0 : Integer.parseInt(objRecId.toString());
+            author.setAuthorId(recId);
+
+            Object objName = rec.get("author_name");
+            String authorName = objName == null ? "" : objName.toString();
+            author.setAuthorName(authorName);
+
+            Object objRecAdded = rec.get("date_added");
+            Date recAdded = objRecAdded == null ? null : (Date) objRecAdded;
+            author.setDateAdded(recAdded);
+
+            list.add(author);
+        }
+        db.closeConnection();
+
+        return list;
     }
 
     @Override
@@ -166,16 +197,25 @@ public class AuthorDao implements IAuthorDao {
                 "admin",
                 new MySqlDataAccess()
         );
+        
+//        int recsUpdated = dao.editAuthorById(
+//                Arrays.asList("author_name", "date_added"),
+//                Arrays.asList("Michael Jordan", "05-06-07"),
+//                6,
+//                "author_id");
 
+        List<Author> list = dao.getAuthorById("author", "author_id", 29);
+
+        
         //Testing Delete record by PK
-        int recsDeleted = dao.removeAuthorById(1);
+//        int recsDeleted = dao.removeAuthorById(1);
 
         //Testing Retrieve all records from database
-        List<Author> list = dao.getListOfAuthors();
+//        List<Author> list = dao.getListOfAuthors();
 
         for (Author a : list) {
-            System.out.println(a.getAuthorId() + ", "
-                    + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
+            System.out.println(a.getAuthorId() + ", " + a.getAuthorName() +
+                    "date added : " + a.getDateAdded());
         }
 
     }

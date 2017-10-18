@@ -61,8 +61,16 @@ public class MockAuthorDao implements IAuthorDao {
     }
 
     @Override
-    public int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException {
+    public int editAuthorById(List<String> colNames, List<Object> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException {
         return 1;
+    }
+
+    @Override
+    public List<Author> getAuthorById(String tableName, String pkColName, Object pkValue) throws ClassNotFoundException, SQLException {
+        List<Author> author = Arrays.asList(
+                new Author(1, "John Doe", new Date())
+        );
+        return author;
     }
 
 }

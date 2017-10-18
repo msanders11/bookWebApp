@@ -20,32 +20,36 @@ public class AuthorService {
         setAuthorDao(authorDao);
     }
 
-    public List<Author> getAuthorList() throws SQLException, ClassNotFoundException {
+    public final List<Author> findAuthorById(String id) throws ClassNotFoundException, SQLException {
+        return authorDao.getAuthorById(AUTHOR_TABLE, AUTHOR_PK, id);
+    }
+
+    public final List<Author> getAuthorList() throws SQLException, ClassNotFoundException {
         return authorDao.getListOfAuthors();
 
     }
-    
-    public final int editAuthor(List<String> colNames, List<Objects> colValues, Object pkValue, String pkColName) throws ClassNotFoundException, SQLException{
-        if(colNames == null || colValues == null || pkValue == null || pkColName == null){
-            throw new IllegalArgumentException();      
-            }
-        return authorDao.editAuthor(colNames, colValues, pkValue, pkColName);
+
+    public final int editAuthorById(List<String> colNames, List<Object> colValues, Object pkValue) throws ClassNotFoundException, SQLException {
+        if (colNames == null || colValues == null || pkValue == null) {
+            throw new IllegalArgumentException();
+        }
+        return authorDao.editAuthorById(colNames, colValues, pkValue, AUTHOR_PK);
     }
-    
-    public final int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException{
-        if(colName == null || colValues == null){
+
+    public final int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException {
+        if (colName == null || colValues == null) {
             throw new IllegalArgumentException("Please provide values");
         }
         return authorDao.addAuthor(colName, colValues);
     }
 
-    public int removeAuthorById(String id) throws ClassNotFoundException, SQLException, NumberFormatException{
+    public final int removeAuthorById(String id) throws ClassNotFoundException, SQLException, NumberFormatException {
         if (id == null) {
             throw new IllegalArgumentException("id must be integer greater than zero");
         }
-        
+
         Integer value = Integer.parseInt(id);
-        
+
         return authorDao.removeAuthorById(value);
     }
 
@@ -68,15 +72,22 @@ public class AuthorService {
 
         AuthorService authorService = new AuthorService(dao);
         
+        System.out.println(authorService.findAuthorById("30"));
+
+//        authorService.editAuthorById(
+//                Arrays.asList("author_name", "date_added"),
+//                Arrays.asList("Mike Sanders", "2010-03-10"),
+//                30);
+//        
         //Test for Delet Author by id
-        int recsDeleted = authorService.removeAuthorById("2");
+//        int recsDeleted = authorService.removeAuthorById("2");
 
         //Test retrieve all records
-        List<Author> list = authorService.getAuthorList();
-
-        for (Author a : list) {
-            System.out.println(a.getAuthorId() + ", "
-                    + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
-        }
+//        List<Author> list = authorService.getAuthorList();
+//
+//        for (Author a : list) {
+//            System.out.println(a.getAuthorId() + ", "
+//                    + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
+//        }
     }
 }

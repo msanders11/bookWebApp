@@ -15,16 +15,20 @@
         <title>Author List</title>
     </head>
     <body>
-        <h1>Author List</h1>
-
-        <table border="1">
-            <c:forEach var="a" items="${authorList}">
-                <tr>
-                    <td>${a.authorId}</td>
-                    <td>${a.authorName}</td>
-                    <td><fmt:formatDate pattern="yyyy-MM-dd" value="${a.dateAdded}"></fmt:formatDate></td>
-                </tr>
-            </c:forEach>
-        </table>
+        <h1>Author List</h1>   
+        <form method="POST" action="authorController?action= ">
+            <table border="1">
+                <c:forEach var="a" items="${authorList}">
+                    <tr>
+                        <td><input type="checkbox" name="id" value="${a.authorId}"></td>
+                        <td>${a.authorName}</td>
+                        <td><fmt:formatDate pattern="yyyy-MM-dd" value="${a.dateAdded}"></fmt:formatDate></td>
+                        <td><input type="button" value="Edit" onclick="location.href='authorController?action=update&id=${a.authorId}'"></td>
+                        <td><input type="button" value="Delete" onclick="location.href='authorController?action=delete&id=${a.authorId}'"></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </form>
+        <input type="button" value="Add" onclick="location.href='authorForm.jsp'">
     </body>
 </html>

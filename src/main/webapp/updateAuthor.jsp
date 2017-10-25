@@ -15,8 +15,9 @@
         <title>Update Author</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"></jsp:include>
         <h1>Update Author</h1>
-
+        
 
 
 

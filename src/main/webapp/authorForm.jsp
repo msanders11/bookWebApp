@@ -12,6 +12,7 @@
         <title>Add Author</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"></jsp:include>
         <h1>Author Form</h1>
         <form name="authorForm" method="POST" action="authorController?action=create">
             <label>Author Name: </label><input type="text" value="" name="value">

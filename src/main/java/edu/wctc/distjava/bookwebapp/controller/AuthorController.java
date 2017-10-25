@@ -41,6 +41,11 @@ public class AuthorController extends HttpServlet {
     public static final String UPDATE_AUTHOR_DESTINATION = "/updateAuthor.jsp";
     public static final String LIST_AUTHOR_DESTINATION = "/authorList.jsp";
 
+    private String driverClass;
+    private String url;
+    private String username;
+    private String password;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -59,11 +64,13 @@ public class AuthorController extends HttpServlet {
         try {
             String action = request.getParameter(ACTION);
 
+//            AuthorService authorService = new AuthorService(
+//                    new AuthorDao(driverClass, url, userName, password,new MySqlDbAccess()));
             IAuthorDao dao = new AuthorDao(
-                    "com.mysql.jdbc.Driver",
-                    "jdbc:mysql://localhost:3306/book",
-                    "root",
-                    "admin",
+                    driverClass,
+                    url,
+                    username,
+                    password,
                     new MySqlDataAccess());
 
             AuthorService authorService = new AuthorService(dao);
@@ -89,10 +96,10 @@ public class AuthorController extends HttpServlet {
                 String id = request.getParameter(ID);
 
                 updateAuthor = authorService.findAuthorById(id);
-                
+
                 Author author = new Author();
                 author = updateAuthor.get(0);
-                System.out.println(author);
+
                 request.setAttribute("updateAuthor", author);
 
                 destination = UPDATE_AUTHOR_DESTINATION;
@@ -109,7 +116,7 @@ public class AuthorController extends HttpServlet {
 
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
-                
+
             } else if (action.equalsIgnoreCase(CREATE_ACTION)) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = new Date();
@@ -133,6 +140,18 @@ public class AuthorController extends HttpServlet {
         RequestDispatcher view
                 = request.getRequestDispatcher(destination); // Where you are sending the data
         view.forward(request, response);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        driverClass = getServletContext()
+                .getInitParameter("driverClass");
+        url = getServletContext()
+                .getInitParameter("url");
+        username = getServletContext()
+                .getInitParameter("username");
+        password = getServletContext()
+                .getInitParameter("password");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -15,6 +15,7 @@
         <title>Author List</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"></jsp:include>
         <h1>Author List</h1>   
         <form method="POST" action="authorController?action= ">
             <table border="1">

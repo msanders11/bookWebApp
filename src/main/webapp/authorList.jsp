@@ -30,6 +30,6 @@
                 </c:forEach>
             </table>
         </form>
-        <input type="button" value="Add" onclick="location.href='authorForm.jsp'">
+        <input type="button" value="Add" onclick="location.href='authorController?action=add'">
     </body>
 </html>

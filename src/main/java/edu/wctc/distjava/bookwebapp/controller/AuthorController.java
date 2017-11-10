@@ -1,10 +1,7 @@
 package edu.wctc.distjava.bookwebapp.controller;
 
 import edu.wctc.distjava.bookwebapp.model.Author;
-import edu.wctc.distjava.bookwebapp.model.AuthorDao;
 import edu.wctc.distjava.bookwebapp.model.AuthorService;
-import edu.wctc.distjava.bookwebapp.model.IAuthorDao;
-import edu.wctc.distjava.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -12,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,17 +32,17 @@ public class AuthorController extends HttpServlet {
     public static final String DELETE_ACTION = "delete";
     public static final String UPDATE_ACTION = "update";
     public static final String CREATE_ACTION = "create";
+    public static final String ADD_ACTION = "add";
     public static final String UPDATE_AUTHOR_ACTION = "updateAuthor";
     public static final String DATE_ADDED_COL_NAME = "date_added";
     public static final String AUTHOR_NAME_COL_NAME = "author_name";
 
     public static final String UPDATE_AUTHOR_DESTINATION = "/updateAuthor.jsp";
     public static final String LIST_AUTHOR_DESTINATION = "/authorList.jsp";
+    public static final String ADD_AUTHOR_DESTINATION = "/authorForm.jsp";
 
-    private String driverClass;
-    private String url;
-    private String username;
-    private String password;
+    @EJB
+    private AuthorService authorService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -64,17 +62,6 @@ public class AuthorController extends HttpServlet {
         try {
             String action = request.getParameter(ACTION);
 
-//            AuthorService authorService = new AuthorService(
-//                    new AuthorDao(driverClass, url, userName, password,new MySqlDbAccess()));
-            IAuthorDao dao = new AuthorDao(
-                    driverClass,
-                    url,
-                    username,
-                    password,
-                    new MySqlDataAccess());
-
-            AuthorService authorService = new AuthorService(dao);
-
             List<Author> authorList = null;
             List<Author> updateAuthor = null;
 
@@ -82,7 +69,7 @@ public class AuthorController extends HttpServlet {
                 destination = LIST_AUTHOR_DESTINATION;
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
-                // add more if logic for other CRUD methods Add/Update/Delete
+
             } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
                 String id = request.getParameter(ID);
 
@@ -95,10 +82,10 @@ public class AuthorController extends HttpServlet {
 
                 String id = request.getParameter(ID);
 
-                updateAuthor = authorService.findAuthorById(id);
-
                 Author author = new Author();
-                author = updateAuthor.get(0);
+//                author = updateAuthor.get(0);
+
+                author = authorService.findAuthorById(id);
 
                 request.setAttribute("updateAuthor", author);
 
@@ -109,27 +96,29 @@ public class AuthorController extends HttpServlet {
                 String authorName = request.getParameter(AUTHOR_NAME);
                 String date = request.getParameter(DATE_ADDED_COL_NAME);
 
-                List<Object> colValues = Arrays.asList(authorName, date);
-                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
+//                List<Object> colValues = Arrays.asList(authorName, date);
+//                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
 
-                authorService.editAuthorById(colNames, colValues, id);
+                authorService.editAuthorById(authorName, date, id);
 
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
 
             } else if (action.equalsIgnoreCase(CREATE_ACTION)) {
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = new Date();
-                dateFormat.format(date);
+//                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//                Date date = new Date();
+//                dateFormat.format(date);
 
-                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
-                Object obj = request.getParameter(AUTHOR_NAME);
-                List<Object> colValues = Arrays.asList(obj, date);
+//                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
+                String authorName = request.getParameter(AUTHOR_NAME);
+//                List<Object> colValues = Arrays.asList(obj, date);
 
-                authorService.addAuthor(colNames, colValues);
+                authorService.addAuthor(authorName);
 
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
+            } else if (action.equalsIgnoreCase(ADD_ACTION)){
+                destination = ADD_AUTHOR_DESTINATION;
             }
 
         } catch (Exception e) {
@@ -144,14 +133,7 @@ public class AuthorController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        driverClass = getServletContext()
-                .getInitParameter("driverClass");
-        url = getServletContext()
-                .getInitParameter("url");
-        username = getServletContext()
-                .getInitParameter("username");
-        password = getServletContext()
-                .getInitParameter("password");
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

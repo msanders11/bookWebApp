@@ -25,7 +25,7 @@
         <form name="updateAuthorForm" method="POST" action="authorController?action=updateAuthor&id=${updateAuthor.authorId}">
             <input type="hidden" value="${updateAuthor.authorId}" name="id">
             <label>Author Name: </label><input type="text" value="${updateAuthor.authorName}" name="value"><br>
-            <label>Date Added: </label><input type="text" value="${updateAuthor.dateAdded}" name="date_added"><br>
+            <label>Date Added: </label><input type="text" value="<fmt:formatDate pattern="yyyy-MM-dd" value="${updateAuthor.dateAdded}"></fmt:formatDate>" name="date_added"><br>
             <input type="submit" value="Submit">
         </form>
 

@@ -83,7 +83,6 @@ public class AuthorController extends HttpServlet {
                 String id = request.getParameter(ID);
 
                 Author author = new Author();
-//                author = updateAuthor.get(0);
 
                 author = authorService.findAuthorById(id);
 
@@ -105,9 +104,7 @@ public class AuthorController extends HttpServlet {
                 request.setAttribute("authorList", authorList);
 
             } else if (action.equalsIgnoreCase(CREATE_ACTION)) {
-//                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//                Date date = new Date();
-//                dateFormat.format(date);
+
 
 //                List<String> colNames = Arrays.asList(AUTHOR_NAME_COL_NAME, DATE_ADDED_COL_NAME);
                 String authorName = request.getParameter(AUTHOR_NAME);

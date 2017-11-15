@@ -76,7 +76,6 @@ public class AuthorService implements Serializable {
         Author author = new Author();
         
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        dateFormat.format(dateAdded);
         Date date = (Date)dateFormat.parse(dateAdded); 
         
         Integer value = Integer.parseInt(pkValue.toString());
